@@ -1,32 +1,46 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
+      <input v-model="addValue" type="text">
+      <button @click="handleClick">Add Todo</button>
+    <ul>
+        <li
+                v-for="todo in getTodos"
+                :key="todo.id"
+        >{{ todo.task }}
+            <button @click="handleDelete(todo.id)">delete</button>
+        </li>
+    </ul>
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import {mapActions,mapGetters} from "vuex";
 
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+export default (await import('vue')).defineComponent({
+    data(){
+        return {
+            addValue: ''
+        }
+    },
+    methods:{
+        ...mapActions(["fetchTodos","addTodo","deleteTodo"]),
+        handleClick(){
+            const obj = {
+                task: this.addValue,
+                completed: false
+            }
+            this.addTodo(obj)
+            this.addValue = ''
+        },
+        handleDelete(id){
+            this.deleteTodo(id)
+        }
+    },
+    mounted() {
+        this.fetchTodos()
+    },
+    computed:{
+        ...mapGetters(['getTodos'])
+    }
+})
+</script>
